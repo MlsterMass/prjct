@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style type="text/css">.error {color: red;}</style>
+    <title>{{ .title }}</title>
+</head>
+<body>
+<h3>Sign up form</h3>
+<form method="post" action="/auth/sign-up">
+    Name:<input type="text" name="name">
+    <br>
+    Username:<input type="text" name="username">
+    <p class="error">{{ .err }}</p>
+    Password:<input type="password" name="password1">
+    <br>
+    Confirm password:<input type="password" name="password2">
+    <br>
+    <input value="Sign up" type="submit">
+</form>
+</body>
+</html>

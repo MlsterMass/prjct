@@ -1,10 +1,15 @@
 package handler
 
 import (
-	"net/http"
-
+	"crypto/sha1"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/zhashkevych/todo-app"
+	"net/http"
+)
+
+const (
+	salt = "hjqrhjqw124617ajfhajs"
 )
 
 // @Summary SignUp
@@ -21,26 +26,38 @@ import (
 // @Router /auth/sign-up [post]
 func (h *Handler) signUp(c *gin.Context) {
 	var input todo.User
+	password1 := c.PostForm("password1")
+	password2 := c.PostForm("password2")
 
-	if err := c.BindJSON(&input); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, "invalid input body")
-		return
+	if password1 == password2 {
+		if err := c.ShouldBind(&input); err != nil {
+			newErrorResponse(c, http.StatusBadRequest, "invalid input body")
+			return
+		}
+
+		_, err := h.services.Authorization.CreateUser(input)
+		if err != nil {
+			newErrorResponse(c, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		c.Redirect(http.StatusFound, "/index")
+	} else {
+		c.HTML(http.StatusOK, "sign-up.html", gin.H{
+			"err": "Password mismatch",
+		})
 	}
+}
 
-	id, err := h.services.Authorization.CreateUser(input)
-	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	c.JSON(http.StatusOK, map[string]interface{}{
-		"id": id,
+func (h *Handler) signUpForm(c *gin.Context) {
+	c.HTML(http.StatusOK, "sign-up.html", gin.H{
+		"title": "Sign up",
 	})
 }
 
 type signInInput struct {
-	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required"`
+	Username string `form:"username" binding:"required"`
+	Password string `form:"password" binding:"required"`
 }
 
 // @Summary SignIn
@@ -57,19 +74,34 @@ type signInInput struct {
 // @Router /auth/sign-in [post]
 func (h *Handler) signIn(c *gin.Context) {
 	var input signInInput
+	input.Username = c.PostForm("username")
+	input.Password = generatePasswordHash(c.PostForm("password"))
 
-	if err := c.BindJSON(&input); err != nil {
+	if err := c.ShouldBind(&input); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	token, err := h.services.Authorization.GenerateToken(input.Username, input.Password)
+	_, err := h.services.Authorization.GenerateToken(input.Username, input.Password)
 	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-		return
+		c.HTML(http.StatusOK, "sign-in.html", gin.H{
+			"err": "User doesn't exist",
+		})
 	}
 
-	c.JSON(http.StatusOK, map[string]interface{}{
-		"token": token,
+	c.Redirect(http.StatusFound, "/index")
+
+}
+
+func (h *Handler) signInForm(c *gin.Context) {
+	c.HTML(http.StatusOK, "sign-in.html", gin.H{
+		"title": "Sign in",
 	})
+}
+
+func generatePasswordHash(password string) string {
+	hash := sha1.New()
+	hash.Write([]byte(password))
+
+	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
 }
