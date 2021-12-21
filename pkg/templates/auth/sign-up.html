@@ -2,19 +2,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <style type="text/css">.error {color: red;}</style>
+    <style type="text/css">
+        .error {color: red;}
+    </style>
     <title>{{ .title }}</title>
 </head>
 <body>
 <h3>Sign up form</h3>
+<span class="error">{{ .err }}</span>
 <form method="post" action="/auth/sign-up">
-    Name:<input type="text" name="name">
+    <label>Name:</label><br>
+    <input type="text" name="name" value="John">
     <br>
-    Username:<input type="text" name="username">
-    <p class="error">{{ .err }}</p>
-    Password:<input type="password" name="password1">
+    <label>Username:</label><br>
+    <input type="text" name="username" value="Doe">
     <br>
-    Confirm password:<input type="password" name="password2">
+    <label>Password:</label><br>
+    <input type="password" name="password1">
+    <br>
+    <label>Confirm password:</label><br>
+    <input type="password" name="password2">
     <br>
     <input value="Sign up" type="submit">
 </form>
