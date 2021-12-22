@@ -2,9 +2,44 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <style type="text/css">
+        * {
+            box-sizing: border-box;
+        }
+        .col-3 {
+            width: 33.333%;
+            margin: .5rem;
+        }
+        .menu {
+            display: flex;
+            flex-flow: row nowrap;
+            align-items: center;
+            align-content: center;
+            justify-content: space-between;
+        }
+    </style>
     <title>{{ .title }}</title>
 </head>
 <body>
-<h3>Index page</h3>
+<div class="menu">
+    <div class="col-3">Logo</div>
+    <div class="col-3">
+        <form>
+            <label>Search</label>
+            <input type="text" name="search" value="Input query">
+        </form>
+    </div>
+    {{ template "sign-up.html"}}
+    {{ if .registered}}
+    <div class="col-3">
+        {{template "sign-in.html"}}
+    </div>
+    {{end}}
+    {{ if .log_in}}
+    <div class="col-3">
+        <span>Logout</span>
+    </div>
+    {{end}}
+</div>
 </body>
 </html>

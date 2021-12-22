@@ -1,11 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <style type="text/css">.error {color: red;}</style>
-    <title>{{ .title }}</title>
-</head>
-<body>
+{{define "sign-in.html"}}
 <h3>Sign in form</h3>
 <span class="error">{{ .err }}</span>
 <form method="post" action="/auth/sign-in">
@@ -17,5 +10,4 @@
     <br>
     <input value="Sign in" type="submit">
 </form>
-</body>
-</html>
+{{end}}

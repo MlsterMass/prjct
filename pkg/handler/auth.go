@@ -40,19 +40,8 @@ func (h *Handler) signUp(c *gin.Context) {
 			newErrorResponse(c, http.StatusInternalServerError, err.Error())
 			return
 		}
-
 		c.Redirect(http.StatusFound, "/index")
-	} else {
-		c.HTML(http.StatusOK, "sign-up.html", gin.H{
-			"err": "Password mismatch",
-		})
 	}
-}
-
-func (h *Handler) signUpForm(c *gin.Context) {
-	c.HTML(http.StatusOK, "sign-up.html", gin.H{
-		"title": "Sign up",
-	})
 }
 
 type signInInput struct {
@@ -91,12 +80,6 @@ func (h *Handler) signIn(c *gin.Context) {
 
 	c.Redirect(http.StatusFound, "/index")
 
-}
-
-func (h *Handler) signInForm(c *gin.Context) {
-	c.HTML(http.StatusOK, "sign-in.html", gin.H{
-		"title": "Sign in",
-	})
 }
 
 func generatePasswordHash(password string) string {
